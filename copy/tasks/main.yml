@@ -1,0 +1,32 @@
+---
+# tasks file for copy
+- name: copy files
+  copy:
+    src: new_config.cfg
+    dest: /etc/config/
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+  - copy
+
+- name: copy template
+  template:
+    src: config.cfg.j2
+    dest: /etc/config/config.cfg
+  tags:
+  - copy_template
+
+- name: copy template with items
+  template:
+    src: config.cfg.j2
+    dest: /etc/config/{{ item }}
+  with_items: "{{ configs }}"
+  when: (item != 'config_c.cfg') or 
+        (ansible_hostname != 'slave1')
+  tags:
+  - copy_template_with_items
+
+- name: install packages
+  package:
+    name: "{{ packages }}"
